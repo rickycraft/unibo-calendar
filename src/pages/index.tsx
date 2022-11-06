@@ -1,11 +1,12 @@
-import { type NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
+import { type NextPage } from "next"
+import Head from "next/head"
+import Link from "next/link"
 
-import { trpc } from "../utils/trpc";
+import { trpc } from "../utils/trpc"
 
 const Home: NextPage = () => {
-  const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+  const csvUpdate = trpc.course.update.useMutation()
+  const timetableUrl = trpc.course.timeUrl.useQuery({ code: 9254 })
 
   return (
     <>
@@ -31,42 +32,33 @@ const Home: NextPage = () => {
             description="Strongly typed programming language that builds on JavaScript, giving you better tooling at any scale"
             documentation="https://www.typescriptlang.org/"
           />
-          <TechnologyCard
-            name="TailwindCSS"
-            description="Rapidly build modern websites without ever leaving your HTML"
-            documentation="https://tailwindcss.com/"
-          />
-          <TechnologyCard
-            name="tRPC"
-            description="End-to-end typesafe APIs made easy"
-            documentation="https://trpc.io/"
-          />
-          <TechnologyCard
-            name="Next-Auth"
-            description="Authentication for Next.js"
-            documentation="https://next-auth.js.org/"
-          />
-          <TechnologyCard
-            name="Prisma"
-            description="Build data-driven JavaScript & TypeScript apps in less time"
-            documentation="https://www.prisma.io/docs/"
-          />
         </div>
-        <div className="flex w-full items-center justify-center pt-6 text-2xl text-blue-500">
-          {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>}
+        <div className="flex flex-col items-center justify-center pt-6 text-2xl text-blue-500">
+          <div className="flex items-center">
+            <button onClick={() => {
+              csvUpdate.mutate()
+            }}>
+              Testami
+            </button>
+          </div>
+          <div className="flex items-center">
+            <span>
+              {timetableUrl.isSuccess && timetableUrl.data?.toString()}
+            </span>
+          </div>
         </div>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
 
 type TechnologyCardProps = {
-  name: string;
-  description: string;
-  documentation: string;
-};
+  name: string
+  description: string
+  documentation: string
+}
 
 const TechnologyCard: React.FC<TechnologyCardProps> = ({
   name,
@@ -86,5 +78,5 @@ const TechnologyCard: React.FC<TechnologyCardProps> = ({
         Documentation
       </Link>
     </section>
-  );
-};
+  )
+}

@@ -7,11 +7,16 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
-model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Course {
+  code        Int    @id
+  description String
+  year        Int
+  type        String
+  duration    Int
+  url         String
+
+  @@unique([code, year])
 }
