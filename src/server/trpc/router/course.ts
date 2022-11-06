@@ -55,7 +55,7 @@ export const courseRouter = router({
         select: { school: true },
         distinct: ["school"],
       })
-      return schools.map((s) => s.school)
+      return schools.map((s) => s.school).sort()
     }),
   types: publicProcedure
     .input(z.object({ school: z.string() }))
@@ -65,7 +65,7 @@ export const courseRouter = router({
         where: { school: input.school },
         distinct: ["type"],
       })
-      return types.map((s) => s.type)
+      return types.map((s) => s.type).sort()
     }),
   courses: publicProcedure
     .input(z.object({ school: z.string(), type: z.string() }))
@@ -73,6 +73,7 @@ export const courseRouter = router({
       const courses = await ctx.prisma.course.findMany({
         where: { school: input.school, type: input.type },
         select: { code: true, description: true },
+        orderBy: { description: "asc" },
       })
       return courses
     }),
