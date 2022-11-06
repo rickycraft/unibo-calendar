@@ -49,5 +49,32 @@ export const courseRouter = router({
       if (course == null) return new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
       return course
     }),
+  schools: publicProcedure
+    .query(async ({ ctx }) => {
+      const schools = await ctx.prisma.course.findMany({
+        select: { school: true },
+        distinct: ["school"],
+      })
+      return schools.map((s) => s.school)
+    }),
+  types: publicProcedure
+    .input(z.object({ school: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const types = await ctx.prisma.course.findMany({
+        select: { type: true },
+        where: { school: input.school },
+        distinct: ["type"],
+      })
+      return types.map((s) => s.type)
+    }),
+  courses: publicProcedure
+    .input(z.object({ school: z.string(), type: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const courses = await ctx.prisma.course.findMany({
+        where: { school: input.school, type: input.type },
+        select: { code: true, description: true },
+      })
+      return courses
+    }),
 })
 
