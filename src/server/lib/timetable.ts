@@ -1,7 +1,8 @@
 import fetch from "node-fetch"
+import { env } from 'process'
 import { z } from 'zod'
 
-const DELTA_DAY = 7
+const DELTA_DAY = 120
 
 const event_t = z.object({
   title: z.string(),
@@ -20,7 +21,11 @@ const events_t = z.array(event_t)
 export const getTimetable = async (baseUrl: string, year: number, curricola: string) => {
   const start = new Date()
   const end = new Date()
-  end.setDate(start.getDate() + DELTA_DAY)
+  if (env.NODE_ENV === "development") {
+    end.setDate(start.getDate() + 7)
+  } else {
+    end.setDate(start.getDate() + DELTA_DAY)
+  }
   const url = getTimetableUrl(baseUrl, year, curricola, start, end)
   const res = await fetch(url)
   if (!res.ok) return undefined
@@ -30,9 +35,11 @@ export const getTimetable = async (baseUrl: string, year: number, curricola: str
   return state.data
 }
 
-export const getLessons = async (baseUrl: string, year: number, curricola: string) => {
-  const timetable = await getTimetable(baseUrl, year, curricola)
-  if (timetable == undefined) return undefined
+export const getFilterTimetable = async (timetable: z.infer<typeof events_t>, lessonCode: string[]) => {
+  return timetable.filter((event) => lessonCode.includes(event.extCode))
+}
+
+export const getLessons = async (timetable: z.infer<typeof events_t>) => {
   const lessons: { title: string, code: string }[] = []
   const codes: string[] = []
   timetable.forEach(event => {
@@ -41,8 +48,6 @@ export const getLessons = async (baseUrl: string, year: number, curricola: strin
       codes.push(event.extCode)
     }
   })
-  console.log(lessons)
-  console.log(codes)
   return lessons
 }
 
