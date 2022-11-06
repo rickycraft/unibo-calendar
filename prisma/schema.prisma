@@ -17,6 +17,7 @@ model Course {
   type        String
   duration    Int
   url         String
+  school      String
 
   @@unique([code, year])
 }

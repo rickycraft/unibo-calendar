@@ -50,7 +50,8 @@ export const getCsv = async () => {
       code,
       description,
       url,
-      _campus, _sede, _ambito,
+      _campus, _sede,
+      school,
       type,
       duration,
       _int, _int_tit, _int_lang,
@@ -64,6 +65,7 @@ export const getCsv = async () => {
       url: url!,
       type: type!,
       duration: Number(duration),
+      school: school!,
     })
   }
   return records
