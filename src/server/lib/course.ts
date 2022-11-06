@@ -10,7 +10,7 @@ const getCsvUrl = (year: number) => {
 }
 
 // TODO: additional parsing
-export const getTimetableUrl = async (fetch_url: string) => {
+export const getCourseUrl = async (fetch_url: string) => {
   try {
     const txt = await (await fetch(fetch_url)).text()
     const $ = load(txt)
