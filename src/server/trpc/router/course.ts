@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { getCourseUrl, getCsv } from '../../lib/course'
+import { getCurricolas } from '../../lib/curricola'
 import { publicProcedure, router } from "../trpc"
 
 export const courseRouter = router({
@@ -27,18 +28,6 @@ export const courseRouter = router({
         return new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: String(error) })
       }
 
-    }),
-  timeUrl: publicProcedure
-    .input(z.object({ code: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const course = await ctx.prisma.course.findFirst({
-        where: { code: input.code },
-      })
-      if (course == null) return new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
-
-      const timetable_url = await getCourseUrl(course.url)
-      if (timetable_url == undefined) return new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
-      return timetable_url
     }),
   get: publicProcedure
     .input(z.object({ code: z.number() }))
@@ -72,10 +61,23 @@ export const courseRouter = router({
     .query(async ({ ctx, input }) => {
       const courses = await ctx.prisma.course.findMany({
         where: { school: input.school, type: input.type },
-        select: { code: true, description: true },
+        select: { code: true, description: true, duration: true },
         orderBy: { description: "asc" },
       })
       return courses
+    }),
+  curricola: publicProcedure
+    .input(z.object({ code: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const course = await ctx.prisma.course.findFirst({
+        where: { code: input.code },
+      })
+      if (course == null) return new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
+      const course_url = await getCourseUrl(course.url)
+      if (course_url == undefined) return new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
+      const curricolas = await getCurricolas(course_url)
+      if (curricolas == undefined) return new TRPCError({ code: 'NOT_FOUND', message: 'curricolas not found' })
+      return curricolas
     }),
 })
 

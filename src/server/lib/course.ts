@@ -12,6 +12,7 @@ const getCsvUrl = (year: number) => {
 // TODO: additional parsing
 export const getCourseUrl = async (fetch_url: string) => {
   try {
+    console.log("getCourseUrl", fetch_url)
     const txt = await (await fetch(fetch_url)).text()
     const $ = load(txt)
     const timetable_url = $("#u-content-preforemost .globe span a").first().attr("href")
