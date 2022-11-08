@@ -1,13 +1,10 @@
-import { z } from "zod"
 
 import { publicProcedure, router } from "../trpc"
 
 export const exampleRouter = router({
   hello: publicProcedure
-    .input(z.object({ text: z.string().nullish() }).nullish())
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input?.text ?? "world"}`,
-      }
+    .query(async () => {
+      // getLessons("https://corsi.unibo.it/laurea/IngegneriaInformatica", 1, "000-000")
+      return "url"
     }),
 })

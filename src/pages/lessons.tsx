@@ -1,6 +1,8 @@
+import { Button, Checkbox } from '@mantine/core'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
+import ContainerFH from '../components/ContainerFH'
 import { trpc } from '../utils/trpc'
 
 const query_t = z.object({
@@ -39,7 +41,7 @@ export default function Lessons() {
   const subscribe = trpc.calendar.register.useMutation()
 
   return (
-    <div>
+    <ContainerFH>
       <h1>Lessons</h1>
       <form onChange={(e) => setErr("")} onSubmit={(e) => {
         e.preventDefault()
@@ -55,24 +57,24 @@ export default function Lessons() {
           setErr("Devi selezionare almeno una lezione")
           return
         }
-        subscribe.mutate({
-          code,
-          year,
-          curricula,
-          lessons: checked,
-        })
+        console.log(checked)
+        // subscribe.mutate({
+        //   code,
+        //   year,
+        //   curricula,
+        //   lessons: checked,
+        // })
       }}>
-        {lessons.isSuccess ? lessons.data.map((lesson) => (
-          <div key={lesson.code}>
-            <input type="checkbox" value={lesson.code} name={lesson.code} />
-            <label>{lesson.title}</label>
-          </div>
-        )) : null}
-        <button type='submit'>Conferma</button>
+        <div className='space-y-3'>
+          {lessons.isSuccess ? lessons.data.map((lesson) => (
+            <Checkbox name={lesson.code} label={lesson.title} key={lesson.code} />
+          )) : null}
+        </div>
+        <Button type='submit' className='mt-3 w-9/12 mx-auto'>Conferma</Button>
       </form>
       <div>
         <span>{err != "" && err}</span>
       </div>
-    </div>
+    </ContainerFH>
   )
 }
