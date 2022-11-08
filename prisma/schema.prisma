@@ -11,13 +11,31 @@ datasource db {
 }
 
 model Course {
-  code        Int    @id
+  code        Int     @id
   description String
   year        Int
   type        String
   duration    Int
   url         String
   school      String
+  urlTime     String?
+
+  Lesson Lesson[]
 
   @@unique([code, year])
+}
+
+model Calendar {
+  slug      String   @id @default(cuid())
+  year      Int
+  curricula String
+  lessons   Lesson[]
+}
+
+model Lesson {
+  id         Int        @id @default(autoincrement())
+  code       String     @unique
+  course     Course     @relation(fields: [courseCode], references: [code])
+  courseCode Int
+  Calendar   Calendar[]
 }

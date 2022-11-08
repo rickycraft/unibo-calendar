@@ -1,11 +1,13 @@
 import { type NextPage } from "next"
 import Head from "next/head"
-import Link from "next/link"
-import { useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useMemo, useState } from 'react'
 
 import { trpc } from "../utils/trpc"
 
 const Home: NextPage = () => {
+  const router = useRouter()
+
   const [school, setSchool] = useState("")
   const schools = trpc.course.schools.useQuery()
 
@@ -22,8 +24,20 @@ const Home: NextPage = () => {
     return Array(course.duration).fill(0)
   }, [courseCode])
 
-  // const [curricola, setCurricola] = useState("")
-  // const curricolas = trpc.course.curricola.useQuery({ code: courseCode })
+  const [curricula, setcurricula] = useState("")
+  const curriculas = trpc.course.curricula.useQuery({ code: courseCode }, { enabled: courseCode !== 0 })
+
+  const reset = () => {
+    setSchool("")
+    setType("")
+    setCourseCode(0)
+    setYear(0)
+    setcurricula("")
+  }
+
+  useEffect(() => {
+    console.log({ school, type, courseCode, year, curricula })
+  }, [school, type, courseCode, year, curricula])
 
   return (
     <>
@@ -35,37 +49,54 @@ const Home: NextPage = () => {
 
       <main>
         <form>
-          <h3>Scuola</h3>
+          <h2>Scuola</h2>
           <select onChange={(e) => setSchool(e.target.value)}>
             <option value="-1">-</option>
             {schools.data?.map((school, idx) => (
-              <option key={idx}>{school}</option>
+              <option key={idx + "sc"}>{school}</option>
             ))}
           </select>
-          <h3>Tipologia</h3>
+          <h2>Tipologia</h2>
           <select onChange={(e) => setType(e.target.value)}>
             <option value="-1">-</option>
             {types.data?.map((type, idx) => (
-              <option key={idx}>{type}</option>
+              <option key={idx + "type"}>{type}</option>
             ))}
           </select>
-          <h3>Corso</h3>
+          <h2>Corso</h2>
           <select onChange={(e) => setCourseCode(Number(e.target.value))}>
             <option value="-1">-</option>
             {courses.data?.map((course) => (
-              <option value={course.code}>{course.description}</option>
+              <option value={course.code} key={course.code}>{course.code} - {course.description}</option>
             ))}
           </select>
-          <h3>Anno</h3>
+          <h2>Anno</h2>
           <select onChange={(e) => setYear(Number(e.target.value))}>
             <option value="-1">-</option>
             {duration.map((_, idx) => (
-              <option>{idx + 1}</option>
+              <option key={idx + 1 + "year"}>{idx + 1}</option>
             ))}
           </select>
-          <h3>Curricola</h3>
-          <select>
+          <h2>curricula</h2>
+          <select onChange={(e) => setcurricula(e.target.value)}>
+            <option value="-1">-</option>
+            {curriculas.isSuccess ? curriculas.data.map((curricula) => (
+              <option value={curricula.value} key={curricula.value}>{curricula.label}</option>
+            )) : null}
           </select>
+          <div>
+            <button type="button" onClick={() =>
+              router.push({
+                pathname: "/lessons",
+                query: {
+                  code: courseCode,
+                  year,
+                  curricula,
+                },
+              })
+            }>Submit</button>
+            <button type="button" onClick={reset}>Reset</button>
+          </div>
         </form>
       </main>
     </>
@@ -73,30 +104,3 @@ const Home: NextPage = () => {
 }
 
 export default Home
-
-type TechnologyCardProps = {
-  name: string
-  description: string
-  documentation: string
-}
-
-const TechnologyCard: React.FC<TechnologyCardProps> = ({
-  name,
-  description,
-  documentation,
-}) => {
-  return (
-    <section className="flex flex-col justify-center rounded border-2 border-gray-500 p-6 shadow-xl duration-500 motion-safe:hover:scale-105">
-      <h2 className="text-lg text-gray-700">{name}</h2>
-      <p className="text-sm text-gray-600">{description}</p>
-      <Link
-        className="m-auto mt-3 w-fit text-sm text-violet-500 underline decoration-dotted underline-offset-2"
-        href={documentation}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Documentation
-      </Link>
-    </section>
-  )
-}

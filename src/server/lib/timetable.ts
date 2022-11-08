@@ -18,15 +18,15 @@ const event_t = z.object({
 })
 const events_t = z.array(event_t)
 
-export const getTimetable = async (baseUrl: string, year: number, curricola: string) => {
+export const getTimetable = async (baseUrl: string, year: number, curricula: string, days: number = DELTA_DAY) => {
   const start = new Date()
   const end = new Date()
   if (env.NODE_ENV === "development") {
     end.setDate(start.getDate() + 7)
   } else {
-    end.setDate(start.getDate() + DELTA_DAY)
+    end.setDate(start.getDate() + days)
   }
-  const url = getTimetableUrl(baseUrl, year, curricola, start, end)
+  const url = getTimetableUrl(baseUrl, year, curricula, start, end)
   const res = await fetch(url)
   if (!res.ok) return undefined
   const json = await res.json()
@@ -51,6 +51,6 @@ export const getLessons = async (timetable: z.infer<typeof events_t>) => {
   return lessons
 }
 
-const getTimetableUrl = (baseUrl: string, year: number, curricola: string, start: Date, end: Date) => {
-  return `${baseUrl}/orario-lezioni/@@orario_reale_json?anno=${year}&curricola=${curricola}&start=${start.toISOString().substring(0, 10)}&end=${end.toISOString().substring(0, 10)}`
+const getTimetableUrl = (baseUrl: string, year: number, curricula: string, start: Date, end: Date) => {
+  return `${baseUrl}/orario-lezioni/@@orario_reale_json?anno=${year}&curricula=${curricula}&start=${start.toISOString().substring(0, 10)}&end=${end.toISOString().substring(0, 10)}`
 }

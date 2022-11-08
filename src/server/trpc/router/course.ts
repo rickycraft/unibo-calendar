@@ -1,7 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { getCourseUrl, getCsv } from '../../lib/course'
-import { getCurricolas } from '../../lib/curricola'
+import { getcurriculas } from '../../lib/curricula'
+import { getLessons, getTimetable } from '../../lib/timetable'
 import { publicProcedure, router } from "../trpc"
 
 export const courseRouter = router({
@@ -66,18 +67,39 @@ export const courseRouter = router({
       })
       return courses
     }),
-  curricola: publicProcedure
+  curricula: publicProcedure
     .input(z.object({ code: z.number() }))
     .query(async ({ input, ctx }) => {
       const course = await ctx.prisma.course.findFirst({
         where: { code: input.code },
       })
-      if (course == null) return new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
+      if (course == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
       const course_url = await getCourseUrl(course.url)
-      if (course_url == undefined) return new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
-      const curricolas = await getCurricolas(course_url)
-      if (curricolas == undefined) return new TRPCError({ code: 'NOT_FOUND', message: 'curricolas not found' })
-      return curricolas
+      if (course_url == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
+      const curriculas = await getcurriculas(course_url)
+      if (curriculas == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'curriculas not found' })
+      await ctx.prisma.course.update({
+        where: { code: input.code },
+        data: { urlTime: course_url },
+      })
+      return curriculas
+    }),
+  lessons: publicProcedure
+    .input(z.object({
+      code: z.number(),
+      year: z.number(),
+      curricula: z.string(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const course = await ctx.prisma.course.findFirst({
+        where: { code: input.code },
+      })
+      if (course == null || course.urlTime == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
+      const timetalbe = await getTimetable(course.urlTime, input.year, input.curricula)
+      if (timetalbe == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
+      const lessons = await getLessons(timetalbe)
+
+      return lessons
     }),
 })
 

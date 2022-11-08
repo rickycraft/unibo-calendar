@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-export const getCurricolas = async (baseUrl: string) => {
+export const getcurriculas = async (baseUrl: string) => {
   const url = `${baseUrl}/orario-lezioni/@@available_curricula`
   const res = await fetch(url)
   if (!res.ok) return undefined
