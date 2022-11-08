@@ -1,4 +1,4 @@
-import { Button, Checkbox } from '@mantine/core'
+import { Button, Checkbox, Notification } from '@mantine/core'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
@@ -11,10 +11,13 @@ const query_t = z.object({
   curricula: z.string(),
 })
 
-const empty = {}
-
 export default function Lessons() {
   const [err, setErr] = useState("")
+  const setError = (err: string) => {
+    setErr(err)
+    setTimeout(() => setErr(""), 5000)
+  }
+  const resetError = () => setErr("")
 
   const router = useRouter()
   const code = Number(router.query.code ?? "-1")
@@ -24,8 +27,7 @@ export default function Lessons() {
 
   useEffect(() => {
     if (!router.query["code"]) return
-    console.log(router.query)
-    // if (!valid) router.push("/")
+    if (!valid) router.push("/")
   }, [router.query])
 
   const lessons = trpc.course.lessons.useQuery({
@@ -35,46 +37,55 @@ export default function Lessons() {
   }, {
     enabled: valid,
     onError: (err) => {
-      setErr(err.message)
+      setError(err.message)
     }
   })
   const subscribe = trpc.calendar.register.useMutation()
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!lessons.isSuccess) return
+    const values = lessons.data.map((lesson) => lesson.code)
+    const checked = []
+    const form = e.target as HTMLFormElement
+    for (const value of values) {
+      const input = form.elements.namedItem(value) as HTMLInputElement
+      if (input.checked) checked.push(value)
+    }
+    if (checked.length === 0) {
+      setError("Devi selezionare almeno una lezione")
+      return
+    }
+    console.log(checked)
+    // subscribe.mutate({
+    //   code,
+    //   year,
+    //   curricula,
+    //   lessons: checked,
+    // })
+  }
+
   return (
-    <ContainerFH>
-      <h1>Lessons</h1>
-      <form onChange={(e) => setErr("")} onSubmit={(e) => {
-        e.preventDefault()
-        if (!lessons.isSuccess) return
-        const values = lessons.data.map((lesson) => lesson.code)
-        const checked = []
-        const form = e.target as HTMLFormElement
-        for (const value of values) {
-          const input = form.elements.namedItem(value) as HTMLInputElement
-          if (input.checked) checked.push(value)
-        }
-        if (checked.length === 0) {
-          setErr("Devi selezionare almeno una lezione")
-          return
-        }
-        console.log(checked)
-        // subscribe.mutate({
-        //   code,
-        //   year,
-        //   curricula,
-        //   lessons: checked,
-        // })
-      }}>
-        <div className='space-y-3'>
-          {lessons.isSuccess ? lessons.data.map((lesson) => (
-            <Checkbox name={lesson.code} label={lesson.title} key={lesson.code} />
-          )) : null}
-        </div>
-        <Button type='submit' className='mt-3 w-9/12 mx-auto'>Conferma</Button>
-      </form>
-      <div>
-        <span>{err != "" && err}</span>
-      </div>
-    </ContainerFH>
+    <>
+      <ContainerFH>
+        <form onChange={resetError} onSubmit={onSubmit}>
+          <div>
+            <h1 className='text-center'>Scegli le lezioni</h1>
+            <div className='space-y-3 w-fit mx-auto'>
+              {lessons.isSuccess ? lessons.data.map((lesson) => (
+                <Checkbox name={lesson.code} label={lesson.title} key={lesson.code} />
+              )) : null}
+              <div className='flex justify-center'>
+                <Button type='submit' className='mt-3 w-3/4'>Conferma</Button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </ContainerFH>
+      <Notification className='fixed bottom-10 inset-x-0 w-1/2 mx-auto'
+        color="red" hidden={err == ""} onClick={resetError}>
+        {err}
+      </Notification>
+    </>
   )
 }

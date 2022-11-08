@@ -27,6 +27,7 @@ export const getTimetable = async (baseUrl: string, year: number, curricula: str
     end.setDate(start.getDate() + days)
   }
   const url = getTimetableUrl(baseUrl, year, curricula, start, end)
+  console.log("getTimetable", url)
   const res = await fetch(url)
   if (!res.ok) return undefined
   const json = await res.json()
