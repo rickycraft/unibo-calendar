@@ -45,4 +45,11 @@ export const calendarRouter = router({
       })
       return calendar
     }),
+  list: publicProcedure
+    .query(async ({ ctx }) => {
+      const calendars = await ctx.prisma.calendar.findMany({
+        include: { lessons: true },
+      })
+      return calendars
+    }),
 })
