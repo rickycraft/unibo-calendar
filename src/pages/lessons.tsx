@@ -36,6 +36,9 @@ export default function Lessons() {
     curricula,
   }, {
     enabled: valid,
+    onSuccess: (data) => {
+      console.log(data)
+    },
     onError: (err) => {
       setError(err.message)
     }
@@ -57,12 +60,12 @@ export default function Lessons() {
       return
     }
     console.log(checked)
-    // subscribe.mutate({
-    //   code,
-    //   year,
-    //   curricula,
-    //   lessons: checked,
-    // })
+    subscribe.mutate({
+      code,
+      year,
+      curricula,
+      lessons: checked,
+    })
   }
 
   return (

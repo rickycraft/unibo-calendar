@@ -25,7 +25,12 @@ const Home = () => {
   }, [courseCode])
 
   const [curricula, setcurricula] = useState("")
-  const curriculas = trpc.course.curricula.useQuery({ code: courseCode }, { enabled: courseCode !== 0 })
+  const curriculas = trpc.course.curricula.useQuery({ code: courseCode },
+    {
+      enabled: courseCode !== 0,
+      retry: 1,
+    }
+  )
 
   const reset = () => {
     setSchool("")

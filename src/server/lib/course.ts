@@ -33,6 +33,7 @@ export const getCsv = async () => {
     console.log("using local csv")
     csvStream = createReadStream('/tmp/corsi_2022_it.csv')
   } else {
+    console.log("getCsv", csv_url)
     const res = await fetch(csv_url)
     if (!res.ok || res.body == null) return undefined
     csvStream = res.body
@@ -56,8 +57,10 @@ export const getCsv = async () => {
       type,
       duration,
       _int, _int_tit, _int_lang,
-      _lang, _access
+      language,
+      _access
     ] = record
+    console.log(record)
 
     records.push({
       year,
@@ -67,6 +70,7 @@ export const getCsv = async () => {
       type: type!,
       duration: Number(duration),
       school: school!,
+      language: language!,
     })
   }
   return records
