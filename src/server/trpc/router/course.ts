@@ -74,14 +74,21 @@ export const courseRouter = router({
         where: { code: input.code },
       })
       if (course == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
-      const course_url = await getCourseUrl(course.url)
-      if (course_url == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
+      let course_url: string
+      if (course.urlTime == null) {
+        const _course_url = await getCourseUrl(course.url)
+        if (_course_url == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course url not found' })
+        course_url = _course_url
+        // update on db
+        await ctx.prisma.course.update({
+          where: { code: input.code },
+          data: { urlTime: course_url },
+        })
+      } else {
+        course_url = course.urlTime
+      }
       const curriculas = await getcurriculas(course_url, course.language)
       if (curriculas == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'curriculas not found' })
-      await ctx.prisma.course.update({
-        where: { code: input.code },
-        data: { urlTime: course_url },
-      })
       return curriculas
     }),
   lessons: publicProcedure
