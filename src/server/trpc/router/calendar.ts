@@ -34,4 +34,15 @@ export const calendarRouter = router({
         return new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: String(error) })
       }
     }),
+  get: publicProcedure
+    .input(z.object({
+      slug: z.string()
+    }))
+    .query(async ({ ctx, input }) => {
+      const calendar = await ctx.prisma.calendar.findFirst({
+        where: { slug: input.slug },
+        include: { lessons: true },
+      })
+      return calendar
+    }),
 })
