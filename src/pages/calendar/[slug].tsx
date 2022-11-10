@@ -1,3 +1,4 @@
+import { List } from '@mantine/core'
 import { useRouter } from 'next/router'
 import ContainerFH from '../../components/ContainerFH'
 import { trpc } from '../../utils/trpc'
@@ -21,11 +22,11 @@ export default function Calendar() {
   return (
     <ContainerFH>
       <h2>SLUG: {slug}</h2>
-      <span>year: {calendar.data?.year}</span>
-      <span>curricula: {calendar.data?.curricula}</span>
-      {calendar.data?.lessons.map((lesson) => (
-        <span key={lesson.id}>Lezioni: {lesson.code}</span>
-      ))}
+      <List>
+        {calendar.data?.map((e, idx) => (
+          <List.Item key={idx}>{e.lectureCode} | {e.start.toISOString().substring(0, 16)} - {e.end.toISOString().substring(0, 16)} | {e.aula}</List.Item>
+        ))}
+      </List>
     </ContainerFH>
   )
 }

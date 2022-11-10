@@ -19,7 +19,7 @@ type timetable = {
   title: string,
   start: Date,
   end: Date,
-  extCode: string,
+  lectureCode: string,
   aula: string,
 }[]
 
@@ -44,7 +44,7 @@ export const getTimetableAPI = async (baseUrl: string, year: number, curricula: 
       title: e.title,
       start,
       end,
-      extCode: e.extCode,
+      lectureCode: e.extCode,
       aula,
     }
   })
@@ -54,9 +54,9 @@ export const getLessons = async (timetable: timetable) => {
   const lessons: { title: string, code: string }[] = []
   const codes: string[] = []
   timetable.forEach(event => {
-    if (codes.indexOf(event.extCode) == -1) {
-      lessons.push({ title: event.title, code: event.extCode })
-      codes.push(event.extCode)
+    if (codes.indexOf(event.lectureCode) == -1) {
+      lessons.push({ title: event.title, code: event.lectureCode })
+      codes.push(event.lectureCode)
     }
   })
   lessons.sort((a, b) => a.title.localeCompare(b.title))
@@ -65,10 +65,9 @@ export const getLessons = async (timetable: timetable) => {
 
 const getTimetableUrl = (baseUrl: string, year: number, curricula: string, _start: Date, _end: Date, insegnamenti: string[]) => {
 
-  const ins = insegnamenti.map(i => `&insegnamenti=${i}`).join()
+  const ins = insegnamenti.map(i => `&insegnamenti=${i}`).join("")
   const start = _start.toISOString().substring(0, 10)
   const end = _end.toISOString().substring(0, 10)
   const url = `${baseUrl}/@@orario_reale_json?anno=${year}&curricula=${curricula}&start=${start}&end=${end}${ins}`
-  // console.log("timetableUrl", url)
   return url
 }

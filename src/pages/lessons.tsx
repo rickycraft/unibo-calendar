@@ -36,9 +36,6 @@ export default function Lessons() {
     curricula,
   }, {
     enabled: valid,
-    onSuccess: (data) => {
-      console.log(data)
-    },
     onError: (err) => {
       setError(err.message)
     }

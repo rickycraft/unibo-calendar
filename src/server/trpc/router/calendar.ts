@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import { getCalendar } from '../../lib/calendar'
 import { publicProcedure, router } from '../trpc'
 
 export const calendarRouter = router({
@@ -23,13 +24,13 @@ export const calendarRouter = router({
           update: {
             lastUpdated: new Date(),
           },
-          select: { id: true },
+          select: { code: true },
         }))
         const res = await ctx.prisma.$transaction(tx)
         console.log(res)
         const calendar = await ctx.prisma.calendar.create({
           data: {
-            lecture: { connect: res.map((r) => ({ id: r.id })) },
+            lecture: { connect: res.map((r) => ({ code: r.code })) },
           },
         })
         return calendar
@@ -42,10 +43,7 @@ export const calendarRouter = router({
       slug: z.string()
     }))
     .query(async ({ ctx, input }) => {
-      const calendar = await ctx.prisma.calendar.findFirst({
-        where: { slug: input.slug },
-        include: { lecture: true },
-      })
+      const calendar = await getCalendar(ctx.prisma, input.slug)
       return calendar
     }),
   list: publicProcedure

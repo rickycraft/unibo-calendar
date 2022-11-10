@@ -27,8 +27,7 @@ model Course {
 }
 
 model Lecture {
-  id          Int      @id @default(autoincrement())
-  code        String   @unique
+  code        String   @id
   year        Int
   curricula   String
   lastUpdated DateTime @default(now())
@@ -46,8 +45,8 @@ model Event {
   end   DateTime
   aula  String
 
-  lecture   Lecture @relation(fields: [lectureId], references: [id])
-  lectureId Int
+  lecture     Lecture @relation(fields: [lectureCode], references: [code])
+  lectureCode String
 }
 
 model Calendar {

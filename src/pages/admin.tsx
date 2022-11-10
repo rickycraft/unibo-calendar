@@ -23,12 +23,12 @@ export default function Admin() {
         <h1 className='text-center'>Calendars</h1>
         <Accordion>
           {calendars.data?.map((calendar) => (
-            <Accordion.Item value={calendar.slug}>
-              <Accordion.Control>{calendar.slug}</Accordion.Control>
+            <Accordion.Item value={calendar.slug} key={calendar.slug}>
+              <Accordion.Control><a href={`/calendar/${calendar.slug}`}>{calendar.slug}</a></Accordion.Control>
               <Accordion.Panel>
                 <List>
                   {calendar.lecture.map((lecture) => (
-                    <List.Item key={lecture.id}>{lecture.code} @ {lecture.lastUpdated.toLocaleDateString()}</List.Item>
+                    <List.Item key={lecture.code}>{lecture.code} @ {lecture.lastUpdated.toLocaleDateString()}</List.Item>
                   ))}
                 </List>
               </Accordion.Panel>
