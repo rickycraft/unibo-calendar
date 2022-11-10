@@ -23,13 +23,13 @@ type timetable = {
   aula: string,
 }[]
 
-export const getTimetableAPI = async (baseUrl: string, year: number, curricula: string, lang: string = 'italiano') => {
+export const getTimetableAPI = async (baseUrl: string, year: number, curricula: string, insegnamenti: string[] = []) => {
   const start = new Date()
   const end = new Date()
   if (env.NODE_ENV === "development") end.setDate(start.getDate() + 7)
   else end.setDate(start.getDate() + DELTA_DAY)
 
-  const url = getTimetableUrl(baseUrl, year, curricula, start, end, lang, [])
+  const url = getTimetableUrl(baseUrl, year, curricula, start, end, insegnamenti)
   console.log("getTimetable", url)
   const res = await fetch(url)
   if (!res.ok) return undefined
@@ -63,12 +63,12 @@ export const getLessons = async (timetable: timetable) => {
   return lessons
 }
 
-const getTimetableUrl = (baseUrl: string, year: number, curricula: string, _start: Date, _end: Date, lang: string, insegnamenti: string[]) => {
-  const t = (lang == "italiano") ? "orario-lezioni" : "timetable"
+const getTimetableUrl = (baseUrl: string, year: number, curricula: string, _start: Date, _end: Date, insegnamenti: string[]) => {
+
   const ins = insegnamenti.map(i => `&insegnamenti=${i}`).join()
   const start = _start.toISOString().substring(0, 10)
   const end = _end.toISOString().substring(0, 10)
-  const url = `${baseUrl}/${t}/@@orario_reale_json?anno=${year}&curricula=${curricula}&start=${start}&end=${end}${ins}`
-  console.log("timetableUrl", url)
+  const url = `${baseUrl}/@@orario_reale_json?anno=${year}&curricula=${curricula}&start=${start}&end=${end}${ins}`
+  // console.log("timetableUrl", url)
   return url
 }

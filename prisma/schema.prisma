@@ -21,22 +21,36 @@ model Course {
   school      String
   urlTime     String?
 
-  Lesson Lesson[]
+  lectures Lecture[]
 
   @@unique([code, year])
 }
 
-model Calendar {
-  slug      String   @id @default(cuid())
-  year      Int
-  curricula String
-  lessons   Lesson[]
+model Lecture {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  year        Int
+  curricula   String
+  lastUpdated DateTime @default(now())
+
+  courses    Course     @relation(fields: [courseCode], references: [code])
+  courseCode Int
+  events     Event[]
+  calendars  Calendar[]
 }
 
-model Lesson {
-  id         Int        @id @default(autoincrement())
-  code       String     @unique
-  course     Course     @relation(fields: [courseCode], references: [code])
-  courseCode Int
-  Calendar   Calendar[]
+model Event {
+  id    Int      @id @default(autoincrement())
+  title String
+  start DateTime
+  end   DateTime
+  aula  String
+
+  lecture   Lecture @relation(fields: [lectureId], references: [id])
+  lectureId Int
+}
+
+model Calendar {
+  slug    String    @id @default(cuid())
+  lecture Lecture[]
 }

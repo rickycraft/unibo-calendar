@@ -8,25 +8,28 @@ export const calendarRouter = router({
       code: z.number(),
       year: z.number(),
       curricula: z.string(),
-      lessons: z.array(z.string()),
+      lectures: z.array(z.string()),
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        const tx = input.lessons.map((lesson) => ctx.prisma.lesson.upsert({
+        const tx = input.lectures.map((lesson) => ctx.prisma.lecture.upsert({
           where: { code: lesson },
           create: {
             code: lesson,
-            course: { connect: { code: input.code } },
+            courses: { connect: { code: input.code } },
+            year: input.year,
+            curricula: input.curricula,
           },
-          update: {},
+          update: {
+            lastUpdated: new Date(),
+          },
           select: { id: true },
         }))
         const res = await ctx.prisma.$transaction(tx)
+        console.log(res)
         const calendar = await ctx.prisma.calendar.create({
           data: {
-            year: input.year,
-            curricula: input.curricula,
-            lessons: { connect: res.map((r) => ({ id: r.id })) },
+            lecture: { connect: res.map((r) => ({ id: r.id })) },
           },
         })
         return calendar
@@ -41,14 +44,14 @@ export const calendarRouter = router({
     .query(async ({ ctx, input }) => {
       const calendar = await ctx.prisma.calendar.findFirst({
         where: { slug: input.slug },
-        include: { lessons: true },
+        include: { lecture: true },
       })
       return calendar
     }),
   list: publicProcedure
     .query(async ({ ctx }) => {
       const calendars = await ctx.prisma.calendar.findMany({
-        include: { lessons: true },
+        include: { lecture: true },
       })
       return calendars
     }),

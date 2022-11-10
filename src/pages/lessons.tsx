@@ -64,7 +64,7 @@ export default function Lessons() {
       code,
       year,
       curricula,
-      lessons: checked,
+      lectures: checked,
     })
   }
 

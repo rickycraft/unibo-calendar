@@ -1,4 +1,4 @@
-import { Button, List } from '@mantine/core'
+import { Accordion, Button, List } from '@mantine/core'
 import ContainerFH from '../components/ContainerFH'
 import { trpc } from '../utils/trpc'
 
@@ -20,19 +20,21 @@ export default function Admin() {
         </Button>
       </div>
       <div className='mt-3 w-fit mx-auto'>
-        <List>
+        <h1 className='text-center'>Calendars</h1>
+        <Accordion>
           {calendars.data?.map((calendar) => (
-            <List.Item key={calendar.slug}>
-              <span>{calendar.slug}</span>
-              <List>
-                {calendar.lessons.map((lesson) => (
-                  <List.Item key={lesson.id}>
-                    <span>{lesson.code}</span>
-                  </List.Item>))}
-              </List>
-            </List.Item>
+            <Accordion.Item value={calendar.slug}>
+              <Accordion.Control>{calendar.slug}</Accordion.Control>
+              <Accordion.Panel>
+                <List>
+                  {calendar.lecture.map((lecture) => (
+                    <List.Item key={lecture.id}>{lecture.code} @ {lecture.lastUpdated.toLocaleDateString()}</List.Item>
+                  ))}
+                </List>
+              </Accordion.Panel>
+            </Accordion.Item>
           ))}
-        </List>
+        </Accordion>
       </div>
     </ContainerFH>
   )
