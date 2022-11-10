@@ -23,13 +23,13 @@ type timetable = {
   aula: string,
 }[]
 
-export const getTimetable = async (baseUrl: string, year: number, curricula: string, lang: String = 'italiano', days: number = DELTA_DAY) => {
+export const getTimetable = async (baseUrl: string, year: number, curricula: string, lang: string = 'italiano') => {
   const start = new Date()
   const end = new Date()
   if (env.NODE_ENV === "development") end.setDate(start.getDate() + 7)
-  else end.setDate(start.getDate() + days)
+  else end.setDate(start.getDate() + DELTA_DAY)
 
-  const url = getTimetableUrl(baseUrl, year, curricula, start, end, lang)
+  const url = getTimetableUrl(baseUrl, year, curricula, start, end, lang, [])
   console.log("getTimetable", url)
   const res = await fetch(url)
   if (!res.ok) return undefined
@@ -50,10 +50,6 @@ export const getTimetable = async (baseUrl: string, year: number, curricula: str
   })
 }
 
-export const getFilterTimetable = async (timetable: z.infer<typeof events_t>, lessonCode: string[]) => {
-  return timetable.filter((event) => lessonCode.includes(event.extCode))
-}
-
 export const getLessons = async (timetable: timetable) => {
   const lessons: { title: string, code: string }[] = []
   const codes: string[] = []
@@ -67,7 +63,12 @@ export const getLessons = async (timetable: timetable) => {
   return lessons
 }
 
-const getTimetableUrl = (baseUrl: string, year: number, curricula: string, start: Date, end: Date, lang: String) => {
+const getTimetableUrl = (baseUrl: string, year: number, curricula: string, _start: Date, _end: Date, lang: string, insegnamenti: string[]) => {
   const t = (lang == "italiano") ? "orario-lezioni" : "timetable"
-  return `${baseUrl}/${t}/@@orario_reale_json?anno=${year}&curricula=${curricula}&start=${start.toISOString().substring(0, 10)}&end=${end.toISOString().substring(0, 10)}`
+  const ins = insegnamenti.map(i => `&insegnamenti=${i}`).join()
+  const start = _start.toISOString().substring(0, 10)
+  const end = _end.toISOString().substring(0, 10)
+  const url = `${baseUrl}/${t}/@@orario_reale_json?anno=${year}&curricula=${curricula}&start=${start}&end=${end}${ins}`
+  console.log("timetableUrl", url)
+  return url
 }
