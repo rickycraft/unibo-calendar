@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { getCourseUrl, getCsv } from '../../lib/course'
 import { getcurriculas } from '../../lib/curricula'
-import { getLessons, getTimetable } from '../../lib/timetable'
+import { getLessons, getTimetableAPI } from '../../lib/timetable'
 import { publicProcedure, router } from "../trpc"
 
 export const courseRouter = router({
@@ -102,7 +102,7 @@ export const courseRouter = router({
         where: { code: input.code },
       })
       if (course == null || course.urlTime == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
-      const timetable = await getTimetable(course.urlTime, input.year, input.curricula, course.language)
+      const timetable = await getTimetableAPI(course.urlTime, input.year, input.curricula, course.language)
       if (timetable == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'timetable not found' })
       const lessons = await getLessons(timetable)
       return lessons

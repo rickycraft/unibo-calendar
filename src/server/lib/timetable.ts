@@ -23,7 +23,7 @@ type timetable = {
   aula: string,
 }[]
 
-export const getTimetable = async (baseUrl: string, year: number, curricula: string, lang: string = 'italiano') => {
+export const getTimetableAPI = async (baseUrl: string, year: number, curricula: string, lang: string = 'italiano') => {
   const start = new Date()
   const end = new Date()
   if (env.NODE_ENV === "development") end.setDate(start.getDate() + 7)
