@@ -43,7 +43,7 @@ const Home = () => {
   useEffect(() => {
     console.log({ school, type, courseCode, year, curricula })
   }, [school, type, courseCode, year, curricula])
-  // TODO: disabilitare boottone
+
   const valid = useMemo(() => {
     return school !== "" && type !== "" && courseCode !== 0 && year !== 0 && curricula !== ""
   }, [school, type, courseCode, year, curricula])
