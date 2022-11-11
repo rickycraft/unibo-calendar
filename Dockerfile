@@ -13,7 +13,6 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN mv .env.prod .env
 
 RUN npx prisma generate
 RUN npm run build
