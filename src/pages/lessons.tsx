@@ -76,7 +76,9 @@ export default function Lessons() {
             <h1 className='text-center'>Scegli le lezioni</h1>
             <div className='space-y-3 w-fit mx-auto'>
               {lessons.isSuccess ? lessons.data.map((lesson) => (
-                <Checkbox name={lesson.code} label={lesson.title} key={lesson.code} />
+                <Checkbox name={lesson.code} key={lesson.code} label={(
+                  <>{lesson.title.split("/")[0]}<br />{lesson.title.split("/")[1]}</>
+                )} />
               )) : null}
               <div className='flex justify-center'>
                 <Button type='submit' className='mt-3 w-3/4'>Conferma</Button>
