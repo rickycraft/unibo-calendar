@@ -1,6 +1,6 @@
 import { Button, Select } from '@mantine/core'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import ContainerFH from '../components/ContainerFH'
 
 import { trpc } from "../utils/trpc"
@@ -39,10 +39,6 @@ const Home = () => {
     setYear(0)
     setcurricula("")
   }
-
-  useEffect(() => {
-    console.log({ school, type, courseCode, year, curricula })
-  }, [school, type, courseCode, year, curricula])
 
   const valid = useMemo(() => {
     return school !== "" && type !== "" && courseCode !== 0 && year !== 0 && curricula !== ""

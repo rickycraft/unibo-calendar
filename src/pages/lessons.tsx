@@ -40,7 +40,11 @@ export default function Lessons() {
       setError(err.message)
     }
   })
-  const subscribe = trpc.calendar.register.useMutation()
+  const subscribe = trpc.calendar.register.useMutation({
+    onSuccess: (data) => {
+      router.push(`/calendar/${data.slug}`)
+    },
+  })
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

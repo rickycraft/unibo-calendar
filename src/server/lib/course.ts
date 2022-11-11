@@ -16,7 +16,6 @@ export const getCourseUrl = async (fetch_url: string) => {
     const txt = await (await fetch(fetch_url)).text()
     const $ = load(txt)
     const timetable_url = $("#u-content-preforemost .globe span a").first().attr("href")
-    console.log(timetable_url)
     return timetable_url
   } catch (error) {
     console.error(error)
@@ -60,7 +59,6 @@ export const getCsv = async () => {
       language,
       _access
     ] = record
-    console.log(record)
 
     records.push({
       year,

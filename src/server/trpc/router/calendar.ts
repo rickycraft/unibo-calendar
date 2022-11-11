@@ -28,7 +28,6 @@ export const calendarRouter = router({
           select: { code: true },
         }))
         const res = await ctx.prisma.$transaction(tx)
-        console.log(res)
         const calendar = await ctx.prisma.calendar.create({
           data: {
             lecture: { connect: res.map((r) => ({ code: r.code })) },
@@ -36,7 +35,7 @@ export const calendarRouter = router({
         })
         return calendar
       } catch (error) {
-        return new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: String(error) })
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: String(error) })
       }
     }),
   get: publicProcedure
