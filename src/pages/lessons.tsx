@@ -85,7 +85,7 @@ export default function Lessons() {
           </div>
         </form>
       </ContainerFH>
-      <Notification className='fixed bottom-10 inset-x-0 w-1/2 mx-auto'
+      <Notification className='fixed bottom-16 inset-x-0 w-1/2 mx-auto'
         color="red" hidden={err == ""} onClick={resetError}>
         {err}
       </Notification>
