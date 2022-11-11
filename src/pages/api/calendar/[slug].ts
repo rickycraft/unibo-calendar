@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(404).json({ error: 'Invalid slug' })
     return
   }
-  console.log("calendar-api", slug)
+  console.log("calendar-ics:", slug)
   const calendar = await getCalendar(prisma, slug)
   if (!calendar) {
     res.status(404).json({ error: 'Calendar not found' })

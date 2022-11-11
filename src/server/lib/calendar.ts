@@ -23,7 +23,7 @@ export async function getCalendar(prisma: PrismaClient, slug: string) {
 const updateLectureCache = async (prisma: PrismaClient, lectures: Lecture[]) => {
   const lectureCodes = lectures.map((l) => l.code)
   if (lectures.length === 0 || !lectures[0]) return []
-  console.log("cache-miss: ", lectureCodes.join(","))
+  console.log("cache-miss:", lectureCodes.join(","))
   const course = await prisma.course.findFirst({
     where: { code: lectures[0].courseCode },
     select: { urlTime: true },
@@ -57,7 +57,7 @@ const updateLectureCache = async (prisma: PrismaClient, lectures: Lecture[]) => 
 }
 
 const getLectureCache = async (prisma: PrismaClient, lectures: string[]) => {
-  if (lectures.length > 0) console.log("cache-hit: ", lectures.join(","))
+  if (lectures.length > 0) console.log("cache-hit:", lectures.join(","))
   const cachedEvents = await prisma.event.findMany({
     where: {
       lecture: { code: { in: lectures } }

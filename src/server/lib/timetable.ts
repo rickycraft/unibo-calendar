@@ -30,7 +30,7 @@ export const getTimetableAPI = async (baseUrl: string, year: number, curricula: 
   else end.setDate(start.getDate() + DELTA_DAY)
 
   const url = getTimetableUrl(baseUrl, year, curricula, start, end, insegnamenti)
-  console.log("getTimetable", url)
+  console.log("timetable-url:", url.substring(baseUrl.length))
   const res = await fetch(url)
   if (!res.ok) return undefined
   const json = await res.json()
