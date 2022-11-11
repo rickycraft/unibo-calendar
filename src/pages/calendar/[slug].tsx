@@ -35,21 +35,20 @@ export default function Calendar() {
       <h2 className='text-center'>OTTIENI IL TUO CALENDARIO</h2>
       <div className='flex flex-wrap justify-around'>
         <Card radius="lg"
-          className='text-center cursor-pointer w-1/3'
+          className='text-center cursor-pointer lg:w-1/3 w-52'
           onClick={openGoogle}
         >
           <h3>Aggiungi a Google</h3>
           <Image src={googleImg} alt='google' height={100} />
         </Card>
         <Card radius="lg"
-          className='text-center cursor-pointer w-1/3'
+          className='text-center cursor-pointer lg:w-1/3 w-52 mt-7 lg:mt-0'
           onClick={openApple}
         >
           <h3>Aggiungi a Apple</h3>
           <Image src={appleImg} alt='apple' height={100} />
         </Card>
       </div>
-      <a className='text-center mt-10' href='/'>TORNA ALLA HOME</a>
     </ContainerFH>
   )
 }
