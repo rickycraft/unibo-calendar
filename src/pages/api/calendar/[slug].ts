@@ -27,7 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     endInputType: 'utc',
     location: e.aula,
   }))
-  console.log("parsed events", events)
   const { error, value } = createEvents(events)
   if (error) {
     res.status(500).json({ error: error.message })
