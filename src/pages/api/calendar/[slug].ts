@@ -1,6 +1,6 @@
 import type { DateArray, EventAttributes } from 'ics'
 import { createEvents } from 'ics'
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '../../../server/db/client'
 import { getCalendar } from '../../../server/lib/calendar'
 
