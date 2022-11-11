@@ -12,9 +12,13 @@ RUN [ -f package-lock.json ] && npm ci || (echo "Lockfile not found." && exit 1)
 FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
+# Generate prisma
+COPY prisma/schema.prisma ./prisma/schema.prisma
 RUN npx prisma generate
+
+# Build app
+COPY . .
 RUN npm run build
 
 # Production image, copy all the files and run next
