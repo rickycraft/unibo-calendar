@@ -1,6 +1,5 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { getCalendar } from '../../lib/calendar'
 import { publicProcedure, router } from '../trpc'
 
 const DEFAULT_DATE = new Date(2021, 0, 1)
@@ -43,8 +42,13 @@ export const calendarRouter = router({
       slug: z.string()
     }))
     .query(async ({ ctx, input }) => {
-      const calendar = await getCalendar(ctx.prisma, input.slug)
-      return calendar.sort((a, b) => a.start.getTime() - b.start.getTime())
+      const calendar = await ctx.prisma.calendar.findUnique({
+        where: { slug: input.slug },
+      })
+      if (!calendar) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Calendar not found' })
+      }
+      return calendar
     }),
   list: publicProcedure
     .query(async ({ ctx }) => {

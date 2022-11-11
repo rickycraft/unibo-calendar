@@ -1,7 +1,12 @@
-import { List } from '@mantine/core'
+import { Card } from '@mantine/core'
+import ContainerFH from 'components/ContainerFH'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
-import ContainerFH from '../../components/ContainerFH'
-import { trpc } from '../../utils/trpc'
+import { trpc } from 'utils/trpc'
+import appleImg from './apple.png'
+import googleImg from './google.png'
+
+const SITE_HOST = 'calendar.rroveri.com'
 
 export default function Calendar() {
   const router = useRouter()
@@ -9,24 +14,42 @@ export default function Calendar() {
   const slug = (typeof _slug !== 'string') ? "" : _slug
 
   const calendar = trpc.calendar.get.useQuery({ slug: slug ?? "" }, {
-    retry: 1,
-    enabled: slug != "",
+    onError: () => {
+      router.push('/404')
+    },
   })
+
+  const webcalUrl = `webcal://${SITE_HOST}/api/calendar/${slug}`
+  const googleUrl = `https://calendar.google.com/calendar/u/0/r?cid=${webcalUrl}`
+  const appleUrl = webcalUrl
+
+  const openApple = () => window.open(appleUrl, '_blank')
+  const openGoogle = () => window.open(googleUrl, '_blank')
 
   if (slug == "" || calendar.isLoading) {
     return <ContainerFH>Loading...</ContainerFH>
   }
-  if (calendar.data == null && calendar.isSuccess) {
-    router.push('/404')
-  }
+
   return (
     <ContainerFH>
-      <h2>SLUG: {slug}</h2>
-      <List>
-        {calendar.data?.map((e, idx) => (
-          <List.Item key={idx}>{e.lectureCode} | {e.start.toISOString().substring(0, 16)} - {e.end.toISOString().substring(0, 16)} | {e.aula}</List.Item>
-        ))}
-      </List>
+      <h2 className='text-center'>OTTIENI IL TUO CALENDARIO</h2>
+      <div className='flex flex-wrap justify-around'>
+        <Card radius="lg"
+          className='text-center cursor-pointer w-1/3'
+          onClick={openGoogle}
+        >
+          <h3>Aggiungi a Google</h3>
+          <Image src={googleImg} alt='google' height={100} />
+        </Card>
+        <Card radius="lg"
+          className='text-center cursor-pointer w-1/3'
+          onClick={openApple}
+        >
+          <h3>Aggiungi a Apple</h3>
+          <Image src={appleImg} alt='apple' height={100} />
+        </Card>
+      </div>
+      <a className='text-center mt-10' href='/'>TORNA ALLA HOME</a>
     </ContainerFH>
   )
 }
