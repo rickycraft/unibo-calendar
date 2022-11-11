@@ -1,10 +1,13 @@
 import { MantineProvider } from '@mantine/core'
+import { useColorScheme } from '@mantine/hooks'
 import { type AppType } from "next/app"
 import Head from 'next/head'
 import "../styles/globals.css"
 import { trpc } from "../utils/trpc"
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  const preferredColorScheme = useColorScheme('dark')
+
   return (
     <>
       <Head>
@@ -15,7 +18,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
-        theme={{ colorScheme: 'dark' }}
+        theme={{ colorScheme: preferredColorScheme }}
       >
         <Component {...pageProps} />
       </MantineProvider>
