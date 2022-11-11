@@ -46,7 +46,8 @@ const Home = () => {
 
   return (
     <ContainerFH>
-      <form className='space-y-4 mb-6'>
+      <h2 className='text-center'>UNIBO-CALENDAR</h2>
+      <form className='space-y-4'>
         <Select label="Scuola" placeholder='Seleziona una scuola' value={school} onChange={(e) => setSchool(e ?? "")}
           data={schools.data?.map((school) => (
             { label: school, value: school }
