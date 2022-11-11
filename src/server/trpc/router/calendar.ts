@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { getCalendar } from '../../lib/calendar'
 import { publicProcedure, router } from '../trpc'
 
+const DEFAULT_DATE = new Date(2021, 0, 1)
+
 export const calendarRouter = router({
   register: publicProcedure
     .input(z.object({
@@ -20,10 +22,9 @@ export const calendarRouter = router({
             courses: { connect: { code: input.code } },
             year: input.year,
             curricula: input.curricula,
+            lastUpdated: DEFAULT_DATE,
           },
-          update: {
-            lastUpdated: new Date(),
-          },
+          update: {},
           select: { code: true },
         }))
         const res = await ctx.prisma.$transaction(tx)
@@ -44,7 +45,7 @@ export const calendarRouter = router({
     }))
     .query(async ({ ctx, input }) => {
       const calendar = await getCalendar(ctx.prisma, input.slug)
-      return calendar
+      return calendar.sort((a, b) => a.start.getTime() - b.start.getTime())
     }),
   list: publicProcedure
     .query(async ({ ctx }) => {

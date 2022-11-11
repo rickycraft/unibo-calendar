@@ -56,7 +56,6 @@ export default function Lessons() {
       setError("Devi selezionare almeno una lezione")
       return
     }
-    console.log(checked)
     subscribe.mutate({
       code,
       year,
