@@ -12,13 +12,13 @@ const getCsvUrl = (year: number) => {
 // TODO: additional parsing
 export const getCourseUrl = async (fetch_url: string) => {
   try {
-    console.log("getCourseUrl", fetch_url)
+    console.log("course-url:", fetch_url)
     const txt = await (await fetch(fetch_url)).text()
     const $ = load(txt)
     const timetable_url = $("#u-content-preforemost .globe span a").first().attr("href")
     return timetable_url
   } catch (error) {
-    console.error(error)
+    console.error("course-error:", error)
     return undefined
   }
 }
@@ -29,10 +29,10 @@ export const getCsv = async () => {
   const csv_url = getCsvUrl(year)
   let csvStream: NodeJS.ReadableStream
   if (env.NODE_ENV === "development") {
-    console.log("using local csv")
+    console.log("csv: using local csv")
     csvStream = createReadStream('/tmp/corsi_2022_it.csv')
   } else {
-    console.log("getCsv", csv_url)
+    console.log("csv:", csv_url)
     const res = await fetch(csv_url)
     if (!res.ok || res.body == null) return undefined
     csvStream = res.body

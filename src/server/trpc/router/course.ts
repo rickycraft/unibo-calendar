@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { getCourseUrl, getCsv } from '../../lib/course'
-import { getcurriculas } from '../../lib/curricula'
+import { getCurriculas } from '../../lib/curricula'
 import { getLessons, getTimetableAPI } from '../../lib/timetable'
 import { publicProcedure, router } from "../trpc"
 
@@ -88,7 +88,7 @@ export const courseRouter = router({
       } else {
         course_url = course.urlTime
       }
-      const curriculas = await getcurriculas(course_url)
+      const curriculas = await getCurriculas(course_url)
       if (curriculas == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'curriculas not found' })
       return curriculas
     }),
