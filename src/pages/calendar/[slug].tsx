@@ -12,6 +12,7 @@ export default function Calendar() {
   const slug = (typeof _slug !== 'string') ? "" : _slug
 
   const calendar = trpc.calendar.get.useQuery({ slug: slug ?? "" }, {
+    enabled: slug != "",
     onError: () => {
       router.push('/404')
     },
