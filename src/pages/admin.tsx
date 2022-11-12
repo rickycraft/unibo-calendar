@@ -1,5 +1,5 @@
 import { Accordion, Button, List, Pagination } from '@mantine/core'
-import { type InferGetServerSidePropsType } from 'next'
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useMemo, useState } from 'react'
 import { createSSG } from 'server/trpc/router/_app'
 import ContainerFH from '../components/ContainerFH'
@@ -7,7 +7,18 @@ import { trpc } from '../utils/trpc'
 
 const PAGE_SIZE = 5
 
-export const getServerSideProps = async () => {
+const unauth = {
+  redirect: {
+    destination: '/',
+    permanent: false,
+  },
+}
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const trueToken = process.env.NEXT_PUBLIC_ADMIN_TOKEN
+  if (!trueToken) return unauth
+  const { token } = context.query
+  if (token !== trueToken) return unauth
 
   const ssg = await createSSG()
   const count = await ssg.calendar.count.fetch()
