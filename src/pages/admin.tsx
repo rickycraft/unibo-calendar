@@ -45,7 +45,7 @@ export default function Admin(
   return (
     <ContainerFH>
       <div className='mt-3 w-fit mx-auto'>
-        <h1>Actions</h1>
+        <h2>Actions</h2>
         <Button color="orange"
           loading={updateCsv.isLoading}
           onClick={() => updateCsv.mutate()}
@@ -54,7 +54,7 @@ export default function Admin(
         </Button>
       </div>
       <div className='mt-3 w-fit mx-auto'>
-        <h1 className='text-center'>Calendars</h1>
+        <h2 className='text-center'>Calendars</h2>
         <Accordion>
           {calendars.data?.map((calendar) => (
             <Accordion.Item value={calendar.slug} key={calendar.slug}>
@@ -70,8 +70,9 @@ export default function Admin(
             </Accordion.Item>
           ))}
         </Accordion>
-        <Pagination total={pageCount} page={page} onChange={setPage} className="justify-center mt-5" />
+        <Pagination total={pageCount} siblings={0} page={page} onChange={setPage} className="justify-center mt-5" />
       </div>
     </ContainerFH>
   )
 }
+
