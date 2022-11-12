@@ -10,7 +10,7 @@ version: "3"
 services:
   unibocalendar:
     container_name: "unibocalendar"
-    image: "ghcr.io/rickycraft/unibo-calendar:latest"
+    image: "ghcr.io/rickycraft/unibo-calendar:main"
     ports:
       - "80:80"
     environment:
