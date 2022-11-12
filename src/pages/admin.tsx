@@ -15,10 +15,12 @@ const unauth = {
 }
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const trueToken = process.env.NEXT_PUBLIC_ADMIN_TOKEN
-  if (!trueToken) return unauth
-  const { token } = context.query
-  if (token !== trueToken) return unauth
+  if (process.env.NODE_ENV !== 'development') {
+    const trueToken = process.env.NEXT_PUBLIC_ADMIN_TOKEN
+    if (!trueToken) return unauth
+    const { token } = context.query
+    if (token !== trueToken) return unauth
+  }
 
   const ssg = await createSSG()
   const count = await ssg.calendar.count.fetch()
@@ -40,6 +42,8 @@ export default function Admin(
   const calendars = trpc.calendar.list.useQuery({
     page: page - 1,
     pageSize: PAGE_SIZE,
+  }, {
+    keepPreviousData: true,
   })
 
   return (
