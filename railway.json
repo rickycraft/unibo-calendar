@@ -4,7 +4,8 @@
     "watchPatterns": [
       "src/**",
       "*.json",
-      "prisma/*"
+      "prisma/schema.prisma",
+      "railway.json"
     ]
   },
   "deploy": {
