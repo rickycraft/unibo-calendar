@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Builds the image
 docker build -t unibo-calendar:latest . && echo "Image built"
 docker container stop unibo-calendar && 
