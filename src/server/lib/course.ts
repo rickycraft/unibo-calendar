@@ -46,6 +46,7 @@ export const getCsv = async () => {
   for await (const _record of parser) {
     //TODO: zod safe parsing
     const record = _record as string[]
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const [
       _year, _imm,
       code,
@@ -59,7 +60,7 @@ export const getCsv = async () => {
       language,
       _access
     ] = record
-
+    /* eslint-disable @typescript-eslint/no-non-null-assertion */
     records.push({
       year,
       code: Number(code),

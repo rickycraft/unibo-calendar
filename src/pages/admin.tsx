@@ -1,5 +1,5 @@
 import { Accordion, Button, List, Pagination } from '@mantine/core'
-import { InferGetServerSidePropsType } from 'next'
+import { type InferGetServerSidePropsType } from 'next'
 import { useMemo, useState } from 'react'
 import { createSSG } from 'server/trpc/router/_app'
 import ContainerFH from '../components/ContainerFH'

@@ -22,7 +22,7 @@ const Home = () => {
     if (courseCode === 0 || !courses.isSuccess) return []
     const course = courses.data.find((c) => c.code === courseCode) ?? { duration: 0 }
     return Array(course.duration).fill(0)
-  }, [courseCode])
+  }, [courseCode, courses.isSuccess])
 
   const [curricula, setcurricula] = useState("")
   const curriculas = trpc.course.curricula.useQuery({ code: courseCode },
