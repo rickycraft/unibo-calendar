@@ -1,5 +1,6 @@
 import { MantineProvider } from '@mantine/core'
 import { useColorScheme } from '@mantine/hooks'
+import { S3_URL } from 'consts'
 import { type AppType } from "next/app"
 import Head from 'next/head'
 import "../styles/globals.css"
@@ -13,7 +14,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <Head>
         <title>unibo-calendar</title>
         <meta name="description" content="Applicazione per aggiungere al calendario le lezioni di unibo" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href={S3_URL + "/calendar.png"} type="image/x-icon" />
       </Head>
       <MantineProvider
         withGlobalStyles
