@@ -49,6 +49,7 @@ export default function Admin(
             <Accordion.Item value={calendar.slug} key={calendar.slug}>
               <Accordion.Control><a href={`/calendar/${calendar.slug}`}>{calendar.slug}</a></Accordion.Control>
               <Accordion.Panel>
+                <span>{calendar.lecture[0]?.courses.description}</span>
                 <List>
                   {calendar.lecture.map((lecture) => (
                     <List.Item key={lecture.code}>{lecture.code} @ {lecture.lastUpdated.toLocaleDateString()}</List.Item>

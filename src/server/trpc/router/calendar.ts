@@ -57,7 +57,20 @@ export const calendarRouter = router({
     }))
     .query(async ({ input, ctx }) => {
       const calendars = await ctx.prisma.calendar.findMany({
-        include: { lecture: true },
+        select: {
+          slug: true,
+          lecture: {
+            select: {
+              code: true,
+              lastUpdated: true,
+              courses: {
+                select: {
+                  description: true,
+                },
+              }
+            }
+          }
+        },
         skip: input.page * input.pageSize,
         take: input.pageSize,
       })
