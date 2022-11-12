@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { trpc } from 'utils/trpc'
 
 const SITE_HOST = 'calendar.rroveri.com'
+const IMG_SIZE = 120
 
 export default function Calendar() {
   const router = useRouter()
@@ -33,21 +34,26 @@ export default function Calendar() {
     <ContainerFH>
       <h2 className='text-center'>OTTIENI IL TUO CALENDARIO</h2>
       <div className='flex flex-wrap justify-around'>
-        <Card radius="lg"
-          className='text-center cursor-pointer lg:w-1/3 w-52'
-          onClick={openGoogle}
-        >
-          <h3>Aggiungi a Google</h3>
-          <Image src="/google.png" alt='google' height={100} width={100} />
-        </Card>
-        <Card radius="lg"
-          className='text-center cursor-pointer lg:w-1/3 w-52 mt-7 lg:mt-0'
-          onClick={openApple}
-        >
-          <h3>Aggiungi a Apple</h3>
-          <Image src="/apple.png" alt='apple' height={100} width={100} />
-        </Card>
+        <ImgContainer onClick={openGoogle} title='Aggiungi a Google' src='/google.png' alt='google' />
+        <ImgContainer onClick={openApple} title='Aggiungi a Apple' src='/apple.png' alt='apple' />
       </div>
     </ContainerFH>
+  )
+}
+
+const ImgContainer = (
+  { onClick, title, src, alt }:
+    { onClick: () => void, title: string, src: string, alt: string }
+) => {
+  return (
+    <Card radius="lg"
+      className='text-center cursor-pointer flex flex-col aspect-square lg:w-2/5 w-52 mt-7 lg:mt-0'
+      onClick={onClick}
+    >
+      <h3>{title}</h3>
+      <div className='flex justify-center flex-grow'>
+        <Image src={src} alt={alt} height={IMG_SIZE} width={IMG_SIZE} className="my-auto" />
+      </div>
+    </Card>
   )
 }
