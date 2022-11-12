@@ -8,7 +8,7 @@ export default function ContainerFH({ children }: { children: React.ReactNode })
 
   return (
     <div className='h-screen'>
-      <div className='lg:w-1/2 w-4/5 mx-auto flex flex-col justify-center' style={{ height: "95vh" }}>
+      <div className='lg:w-1/2 w-4/5 mx-auto flex flex-col justify-center' style={{ height: "95vh", overflowY: "auto" }}>
         {children}
       </div>
       <Footer height="5vh" className='flex flex-col justify-center' style={{ backgroundColor: footerColor }}>
