@@ -51,10 +51,21 @@ export const calendarRouter = router({
       return calendar
     }),
   list: publicProcedure
-    .query(async ({ ctx }) => {
+    .input(z.object({
+      page: z.number(),
+      pageSize: z.number(),
+    }))
+    .query(async ({ input, ctx }) => {
       const calendars = await ctx.prisma.calendar.findMany({
         include: { lecture: true },
+        skip: input.page * input.pageSize,
+        take: input.pageSize,
       })
       return calendars
+    }),
+  count: publicProcedure
+    .query(async ({ ctx }) => {
+      const count = await ctx.prisma.calendar.count()
+      return count
     }),
 })
