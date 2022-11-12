@@ -1,7 +1,6 @@
 {
   "build": {
     "builder": "nixpacks",
-    "buildCommand": "npm run build",
     "watchPatterns": [
       "src/**",
       "*.json",
@@ -10,7 +9,6 @@
   },
   "deploy": {
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 5,
-    "startCommand": "npm run start"
+    "restartPolicyMaxRetries": 5
   }
 }
