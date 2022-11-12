@@ -1,12 +1,11 @@
 import { Card } from '@mantine/core'
 import ContainerFH from 'components/ContainerFH'
+import { S3_URL, SITE_HOST } from 'consts'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { trpc } from 'utils/trpc'
 
-const SITE_HOST = 'calendar.rroveri.com'
 const IMG_SIZE = 120
-const S3_URL = "https://unibo-calendar.s3.eu-south-1.amazonaws.com"
 
 export default function Calendar() {
   const router = useRouter()
