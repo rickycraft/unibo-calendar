@@ -13,5 +13,8 @@ const config = {
     defaultLocale: "en",
   },
   output: "standalone",
+  images: {
+    domains: [ "unibo-calendar.s3.eu-south-1.amazonaws.com" ]
+  }
 };
 export default config;

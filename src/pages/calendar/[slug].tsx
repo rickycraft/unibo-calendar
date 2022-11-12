@@ -6,6 +6,7 @@ import { trpc } from 'utils/trpc'
 
 const SITE_HOST = 'calendar.rroveri.com'
 const IMG_SIZE = 120
+const S3_URL = "https://unibo-calendar.s3.eu-south-1.amazonaws.com"
 
 export default function Calendar() {
   const router = useRouter()
@@ -34,8 +35,8 @@ export default function Calendar() {
     <ContainerFH>
       <h2 className='text-center'>OTTIENI IL TUO CALENDARIO</h2>
       <div className='flex flex-wrap justify-around'>
-        <ImgContainer onClick={openGoogle} title='Aggiungi a Google' src='/google.png' alt='google' />
-        <ImgContainer onClick={openApple} title='Aggiungi a Apple' src='/apple.png' alt='apple' />
+        <ImgContainer onClick={openGoogle} title='Aggiungi a Google' src={S3_URL + '/google.png'} alt='google' />
+        <ImgContainer onClick={openApple} title='Aggiungi a Apple' src={S3_URL + '/apple.png'} alt='apple' />
       </div>
     </ContainerFH>
   )
