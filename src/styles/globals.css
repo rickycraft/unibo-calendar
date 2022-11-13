@@ -20,3 +20,6 @@ body {
   height: 100%;
 }
 
+.status-message {
+  @apply fixed bottom-16 inset-x-0 w-1/2 mx-auto
+}

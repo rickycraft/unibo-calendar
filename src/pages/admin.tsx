@@ -90,7 +90,7 @@ export default function Admin(
           <Pagination total={pageCount} siblings={0} page={page} onChange={setPage} className="justify-center mt-5" />
         </div>
       </ContainerFH>
-      <Notification className='fixed bottom-16 inset-x-0 w-1/2 mx-auto' disallowClose
+      <Notification className='status-message' disallowClose
         color={(msg.includes("error")) ? "red" : "blue"} hidden={msg == ""}>
         {msg}
       </Notification>
