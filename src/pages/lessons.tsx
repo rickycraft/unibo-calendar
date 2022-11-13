@@ -1,15 +1,8 @@
 import { Button, Checkbox, Notification } from '@mantine/core'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { z } from 'zod'
 import ContainerFH from '../components/ContainerFH'
 import { trpc } from '../utils/trpc'
-
-const query_t = z.object({
-  code: z.string(),
-  year: z.string(),
-  curricula: z.string(),
-})
 
 export default function Lessons() {
   const [err, setErr] = useState("")
@@ -23,7 +16,7 @@ export default function Lessons() {
   const code = Number(router.query.code ?? "-1")
   const year = Number(router.query.year ?? "-1")
   const curricula = (router.query.curricula ?? "") as string
-  const valid = query_t.safeParse(router.query).success
+  const valid = code > 0 && year > 0 && curricula.length > 0
 
   useEffect(() => {
     if (!router.query["code"]) return
