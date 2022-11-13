@@ -1,34 +1,29 @@
 import { TRPCError } from '@trpc/server'
+import { getCourseUrl, getCsv } from 'server/lib/course'
+import { getCurriculas } from 'server/lib/curricula'
+import { getLessons, getTimetableAPI } from 'server/lib/timetable'
+import { publicProcedure, router } from "server/trpc/trpc"
 import { z } from 'zod'
-import { getCourseUrl, getCsv } from '../../lib/course'
-import { getCurriculas } from '../../lib/curricula'
-import { getLessons, getTimetableAPI } from '../../lib/timetable'
-import { publicProcedure, router } from "../trpc"
 
 export const courseRouter = router({
   update: publicProcedure
     .mutation(async ({ ctx }) => {
-      try {
-        const records = await getCsv()
-        if (records == undefined) throw new Error("records is undefined")
+      const records = await getCsv()
+      if (records == undefined) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Error while fetching csv" })
 
-        const transactions = records.map((record) => ctx.prisma.course.upsert({
-          where: {
-            code_year:
-            {
-              code: record.code,
-              year: record.year
-            }
-          },
-          create: record,
-          update: {},
-        }))
-        const res = await ctx.prisma.$transaction(transactions)
-        return res.length
-      } catch (error) {
-        return new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: String(error) })
-      }
-
+      const transactions = records.map((record) => ctx.prisma.course.upsert({
+        where: {
+          code_year:
+          {
+            code: record.code,
+            year: record.year
+          }
+        },
+        create: record,
+        update: record,
+      }))
+      const res = await ctx.prisma.$transaction(transactions)
+      return res.length
     }),
   get: publicProcedure
     .input(z.object({ code: z.number() }))
@@ -36,7 +31,7 @@ export const courseRouter = router({
       const course = await ctx.prisma.course.findFirst({
         where: { code: input.code },
       })
-      if (course == null) return new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
+      if (course == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
       return course
     }),
   schools: publicProcedure
