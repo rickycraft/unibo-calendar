@@ -1,16 +1,20 @@
-import { MantineProvider } from '@mantine/core'
-import { useColorScheme } from '@mantine/hooks'
 import { S3_URL } from 'consts'
 import { type AppType } from "next/app"
 import Head from 'next/head'
-import "../styles/globals.css"
 import { trpc } from "../utils/trpc"
+// style
+import { MantineProvider } from '@mantine/core'
+import { useColorScheme } from '@mantine/hooks'
+import "../styles/globals.css"
+// analytics
+import { GoogleAnalytics } from 'nextjs-google-analytics'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const preferredColorScheme = useColorScheme('dark')
 
   return (
     <>
+      <GoogleAnalytics trackPageViews strategy="lazyOnload" />
       <Head>
         <title>unibo-calendar</title>
         <meta name="description" content="Applicazione per aggiungere al calendario le lezioni di unibo" />
