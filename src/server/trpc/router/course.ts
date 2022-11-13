@@ -9,7 +9,7 @@ export const courseRouter = router({
   update: publicProcedure
     .mutation(async ({ ctx }) => {
       const records = await getCsv()
-      if (records == undefined) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Error while fetching csv" })
+      if (records == undefined) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "cannot fetch csv" })
 
       const transactions = records.map((record) => ctx.prisma.course.upsert({
         where: {
