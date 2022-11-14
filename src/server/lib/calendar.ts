@@ -9,7 +9,7 @@ export async function getCalendar(prisma: PrismaClient, slug: string) {
     where: { slug },
     include: { lecture: true },
   })
-  if (!calendar) throw new TRPCError({ code: 'NOT_FOUND', message: 'Calendar not found' })
+  if (!calendar) return undefined
 
   const today = (new Date()).getTime()
   const cachedLectures = calendar.lecture.filter((l) => (today - l.lastUpdated.getTime()) < DAY)
