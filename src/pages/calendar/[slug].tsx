@@ -12,16 +12,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const { slug } = context.query
   const valid = (typeof slug == 'string')
 
-  if (!valid) {
-    return {
-      notFound: true,
-    }
-  }
-  return {
-    props: {
-      slug,
-    },
-  }
+  if (!valid) return { notFound: true }
+  return { props: { slug } }
 }
 
 export default function Calendar(
