@@ -67,6 +67,7 @@ export const calendarRouter = router({
               courses: {
                 select: {
                   description: true,
+                  type: true,
                 },
               }
             }
