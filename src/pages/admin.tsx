@@ -57,6 +57,14 @@ export default function Admin(
   }, {
     keepPreviousData: true,
   })
+  const updateCalendar = trpc.calendar.refresh.useMutation({
+    onError(error) {
+      setMsg("update-calendar: error " + error.message)
+    },
+    onSuccess(data, { slug }) {
+      setMsg(`update-calendar: updated ${slug} with ${data} events`)
+    },
+  })
 
   return (
     <>
@@ -78,9 +86,10 @@ export default function Admin(
                 <Accordion.Control><a href={`/calendar/${calendar.slug}`}>{calendar.slug}</a></Accordion.Control>
                 <Accordion.Panel>
                   <span>{calendar.lecture[0]?.courses.description}</span>
+                  <span onClick={() => updateCalendar.mutate({ slug: calendar.slug })} className="cursor-pointer"> 🔄</span>
                   <List>
                     {calendar.lecture.map((lecture) => (
-                      <List.Item key={lecture.code}>{lecture.code} @ {lecture.lastUpdated.toLocaleDateString()}</List.Item>
+                      <List.Item key={lecture.code}>{lecture.code} @ {lecture.lastUpdated.toLocaleDateString("it-IT")}</List.Item>
                     ))}
                   </List>
                 </Accordion.Panel>

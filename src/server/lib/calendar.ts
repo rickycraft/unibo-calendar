@@ -20,7 +20,7 @@ export async function getCalendar(prisma: PrismaClient, slug: string) {
   return cachedEvents.concat(notCachedEvents)
 }
 
-const updateLectureCache = async (prisma: PrismaClient, lectures: Lecture[]) => {
+export const updateLectureCache = async (prisma: PrismaClient, lectures: Lecture[]) => {
   const lectureCodes = lectures.map((l) => l.code)
   if (lectures.length === 0 || !lectures[0]) return []
   console.log("cache-miss:", lectureCodes.join(","))

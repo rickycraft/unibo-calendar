@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server'
+import { updateLectureCache } from 'server/lib/calendar'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
 
@@ -83,5 +84,18 @@ export const calendarRouter = router({
     .query(async ({ ctx }) => {
       const count = await ctx.prisma.calendar.count()
       return count
+    }),
+  refresh: publicProcedure
+    .input(z.object({
+      slug: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const calendar = await ctx.prisma.calendar.findFirst({
+        where: { slug: input.slug },
+        include: { lecture: true },
+      })
+      if (calendar == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'Calendar not found' })
+      const res = await updateLectureCache(ctx.prisma, calendar.lecture)
+      return res.length
     }),
 })
