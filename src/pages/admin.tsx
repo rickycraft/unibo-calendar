@@ -63,6 +63,7 @@ export default function Admin(
     },
     onSuccess(data, { slug }) {
       setMsg(`update-calendar: updated ${slug} with ${data} events`)
+      calendars.refetch()
     },
   })
 
