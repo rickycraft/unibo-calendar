@@ -59,10 +59,10 @@ export default function Admin(
   })
   const updateCalendar = trpc.calendar.refresh.useMutation({
     onError(error) {
-      setMsg("update-calendar: error " + error.message)
+      setMsg("error " + error.message)
     },
     onSuccess(data, { slug }) {
-      setMsg(`update-calendar: updated ${slug} with ${data} events`)
+      setMsg(`updated ${slug} with ${data} events`)
       calendars.refetch()
     },
   })
