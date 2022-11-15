@@ -1,4 +1,4 @@
-import { Accordion, Button, List, Notification, Pagination } from '@mantine/core'
+import { Accordion, Button, Input, List, Notification, Pagination } from '@mantine/core'
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useMemo, useState } from 'react'
 import { createSSG } from 'server/trpc/router/_app'
@@ -37,12 +37,13 @@ export default function Admin(
 ) {
   const pageCount = useMemo(() => Math.ceil(props.count / PAGE_SIZE), [props.count])
   const [page, setPage] = useState(1)
-
+  const [search, setSearch] = useState('')
   const [msg, _setMsg] = useState("")
   const setMsg = (msg: string) => {
     _setMsg(msg)
     setTimeout(() => _setMsg(""), 5000)
   }
+
   const updateCsv = trpc.course.update.useMutation({
     onError(error) {
       setMsg("error " + error.message)
@@ -54,6 +55,7 @@ export default function Admin(
   const calendars = trpc.calendar.list.useQuery({
     page: page - 1,
     pageSize: PAGE_SIZE,
+    slug: search,
   }, {
     keepPreviousData: true,
   })
@@ -81,6 +83,7 @@ export default function Admin(
         </div>
         <div className='mt-3 w-fit mx-auto'>
           <h2 className='text-center'>Calendars</h2>
+          <Input placeholder='Search' value={search} onChange={(e: any) => setSearch(e.currentTarget.value)} />
           <Accordion>
             {calendars.data?.map((calendar) => (
               <Accordion.Item value={calendar.slug} key={calendar.slug}>
@@ -97,7 +100,7 @@ export default function Admin(
               </Accordion.Item>
             ))}
           </Accordion>
-          <Pagination total={pageCount} siblings={0} page={page} onChange={setPage} className="justify-center mt-5" />
+          {search == "" && <Pagination total={pageCount} siblings={0} page={page} onChange={setPage} className="justify-center mt-5" />}
         </div>
       </ContainerFH>
       <Notification className='status-message' disallowClose

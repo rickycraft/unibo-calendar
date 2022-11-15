@@ -55,8 +55,13 @@ export const calendarRouter = router({
     .input(z.object({
       page: z.number(),
       pageSize: z.number(),
+      slug: z.string(),
     }))
     .query(async ({ input, ctx }) => {
+      const searchCalendar = (input.slug != "")
+      const where = (searchCalendar) ? { slug: input.slug } : {}
+      const skip = (searchCalendar) ? 0 : input.page * input.pageSize
+      const take = (searchCalendar) ? undefined : input.pageSize
       const calendars = await ctx.prisma.calendar.findMany({
         select: {
           slug: true,
@@ -76,8 +81,7 @@ export const calendarRouter = router({
         orderBy: {
           slug: 'asc',
         },
-        skip: input.page * input.pageSize,
-        take: input.pageSize,
+        where, skip, take,
       })
       return calendars
     }),
