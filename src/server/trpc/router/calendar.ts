@@ -71,6 +71,9 @@ export const calendarRouter = router({
             }
           }
         },
+        orderBy: {
+          slug: 'asc',
+        },
         skip: input.page * input.pageSize,
         take: input.pageSize,
       })

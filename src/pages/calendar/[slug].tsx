@@ -1,21 +1,31 @@
 import { Card } from '@mantine/core'
 import ContainerFH from 'components/ContainerFH'
 import { S3_URL, SITE_HOST } from 'consts'
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { trpc } from 'utils/trpc'
 
 const IMG_SIZE = 120
 
-export default function Calendar() {
-  const router = useRouter()
-  const _slug = router.query.slug
-  const slug = (typeof _slug !== 'string') ? "" : _slug
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { slug } = context.query
+  const valid = (typeof slug == 'string')
 
-  const calendar = trpc.calendar.get.useQuery({ slug: slug ?? "" }, {
-    enabled: slug != "",
-    onError: () => {
-      router.push('/404')
+  if (!valid) return { notFound: true }
+  return { props: { slug } }
+}
+
+export default function Calendar(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
+  const router = useRouter()
+  const slug = props.slug
+  const calendar = trpc.calendar.get.useQuery({ slug }, {
+    retry: 1,
+    onError(err) {
+      err.data?.code === 'NOT_FOUND' && router.push('/404')
+      console.error("calendar-front:", err.message)
     },
   })
 
@@ -23,12 +33,12 @@ export default function Calendar() {
   const googleUrl = `https://calendar.google.com/calendar/u/0/r?cid=${webcalUrl}`
   const appleUrl = webcalUrl
 
-  const openApple = () => window.open(appleUrl, '_blank')
-  const openGoogle = () => window.open(googleUrl, '_blank')
-
-  if (slug == "" || calendar.isLoading) {
-    return <ContainerFH>Loading...</ContainerFH>
+  const openUrl = (url: string) => {
+    if (!calendar.isSuccess) return
+    window.open(url, '_blank')
   }
+  const openApple = () => openUrl(appleUrl)
+  const openGoogle = () => openUrl(googleUrl)
 
   return (
     <ContainerFH>

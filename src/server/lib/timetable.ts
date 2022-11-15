@@ -1,3 +1,4 @@
+import { DateTime } from "luxon"
 import fetch from "node-fetch"
 import { env } from 'process'
 import { z } from 'zod'
@@ -24,12 +25,10 @@ type timetable = {
 }[]
 
 export const getTimetableAPI = async (baseUrl: string, year: number, curricula: string, insegnamenti: string[] = []) => {
-  const start = new Date()
-  const end = new Date()
-  if (env.NODE_ENV === "development") end.setDate(start.getDate() + 7)
-  else end.setDate(start.getDate() + DELTA_DAY)
+  const start = DateTime.now()
+  const end = start.plus({ days: (env.NODE_ENV === "development") ? 7 : DELTA_DAY })
 
-  const url = getTimetableUrl(baseUrl, year, curricula, start, end, insegnamenti)
+  const url = getTimetableUrl(baseUrl, year, curricula, start.toJSDate(), end.toJSDate(), insegnamenti)
   console.log("timetable-url:", url.substring(baseUrl.length))
   const res = await fetch(url)
   if (!res.ok) return undefined
@@ -37,13 +36,13 @@ export const getTimetableAPI = async (baseUrl: string, year: number, curricula: 
   const state = events_t.safeParse(json)
   if (!state.success) return undefined
   return state.data.map((e) => {
-    const start = new Date(e.start)
-    const end = new Date(e.end)
+    const start = DateTime.fromISO(e.start, { zone: "Europe/Rome" })
+    const end = DateTime.fromISO(e.end, { zone: "Europe/Rome" })
     const aula = (e.aule.length > 0) ? e.aule[0]?.des_edificio + " - " + e.aule[0]?.des_piano : ""
     return {
       title: e.title,
-      start,
-      end,
+      start: start.toJSDate(),
+      end: end.toJSDate(),
       lectureCode: e.extCode,
       aula,
     }
