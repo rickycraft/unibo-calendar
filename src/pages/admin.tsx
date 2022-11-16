@@ -32,6 +32,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   }
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function Admin(
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {

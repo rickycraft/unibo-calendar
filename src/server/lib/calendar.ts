@@ -1,4 +1,4 @@
-import { Event, Lecture, PrismaClient } from '@prisma/client'
+import type { Event, Lecture, PrismaClient } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { getTimetableAPI } from './timetable'
 

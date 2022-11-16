@@ -1,4 +1,4 @@
-import { Course, PrismaClient } from '@prisma/client'
+import type { Course, PrismaClient } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { load } from "cheerio"
 import { currentYear } from 'consts'
