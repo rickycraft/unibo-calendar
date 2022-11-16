@@ -1,4 +1,7 @@
+import type { Course, PrismaClient } from '@prisma/client'
+import { TRPCError } from '@trpc/server'
 import { load } from "cheerio"
+import { currentYear } from 'consts'
 import { parse } from "csv-parse"
 import { createReadStream } from 'fs'
 import fetch from 'node-fetch'
@@ -8,27 +11,8 @@ const BASE_URL = "https://dati.unibo.it/dataset/degree-programmes/resource"
 
 const csvUrl = (year: number) => `${BASE_URL}/corsi_${year}_it/download/corsi_${year}_it.csv`
 
-const getCsvYear = async () => {
-  const today = new Date()
-  const year = today.getFullYear()
-  const nextYear = today.getFullYear() + 1
-  // first try to do head request
-  const head = await fetch(csvUrl(nextYear), { method: "HEAD" })
-  if (head.status === 404) {
-    // next year is not yet valid
-    return year
-  }
-  if (!head.ok) {
-    // unknown error
-    console.error("get-csvurl:", head.statusText)
-    return undefined
-  }
-  return nextYear
-}
-
 export const getCsv = async () => {
-  const year = await getCsvYear()
-  if (!year) return undefined
+  const year = currentYear()
   const csv_url = csvUrl(year)
 
   let csvStream: NodeJS.ReadableStream
@@ -38,7 +22,10 @@ export const getCsv = async () => {
   } else {
     console.log("csv:", csv_url)
     const res = await fetch(csv_url)
-    if (!res.ok || res.body == null) return undefined
+    if (!res.ok || res.body == null) {
+      console.error("csv-error:", res.statusText)
+      return undefined
+    }
     csvStream = res.body
   }
   const records = []
@@ -52,7 +39,8 @@ export const getCsv = async () => {
     const record = _record as string[]
     /* eslint-disable @typescript-eslint/no-unused-vars */
     const [
-      _year, _imm,
+      yyear,
+      _imm,
       code,
       description,
       url,
@@ -66,7 +54,7 @@ export const getCsv = async () => {
     ] = record
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     records.push({
-      year,
+      year: Number(yyear?.split('/')[0]),
       code: Number(code),
       description: description!,
       url: url!,
@@ -90,4 +78,20 @@ export const getCourseUrl = async (fetch_url: string) => {
   const $ = load(txt)
   const timetable_url = $("#u-content-preforemost .globe span a").first().attr("href")
   return timetable_url
+}
+
+export const getCourseTimeUrl = async (prisma: PrismaClient, course: Course) => {
+  if (course.urlTime != null) return course.urlTime
+
+  const _course_url = await getCourseUrl(course.url)
+  if (_course_url == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course url not found' })
+
+  const lang = (course.language == "italiano") ? "orario-lezioni" : "timetable"
+  const course_url = `${_course_url}/${lang}`
+  await prisma.course.update({
+    where: { code: course.code },
+    data: { urlTime: course_url },
+  })
+
+  return course_url
 }

@@ -31,10 +31,16 @@ export const getTimetableAPI = async (baseUrl: string, year: number, curricula: 
   const url = getTimetableUrl(baseUrl, year, curricula, start.toJSDate(), end.toJSDate(), insegnamenti)
   console.log("timetable-url:", url.substring(baseUrl.length))
   const res = await fetch(url)
-  if (!res.ok) return undefined
+  if (!res.ok) {
+    console.error("timetable-error:", res.statusText)
+    return undefined
+  }
   const json = await res.json()
   const state = events_t.safeParse(json)
-  if (!state.success) return undefined
+  if (!state.success) {
+    console.error("timetable-error:", state.error)
+    return undefined
+  }
   return state.data.map((e) => {
     const start = DateTime.fromISO(e.start, { zone: "Europe/Rome" })
     const end = DateTime.fromISO(e.end, { zone: "Europe/Rome" })

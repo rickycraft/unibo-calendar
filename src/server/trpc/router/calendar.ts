@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server'
+import { updateLectureCache } from 'server/lib/calendar'
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
 
@@ -54,8 +55,13 @@ export const calendarRouter = router({
     .input(z.object({
       page: z.number(),
       pageSize: z.number(),
+      slug: z.string(),
     }))
     .query(async ({ input, ctx }) => {
+      const searchCalendar = (input.slug != "")
+      const where = (searchCalendar) ? { slug: input.slug } : {}
+      const skip = (searchCalendar) ? 0 : input.page * input.pageSize
+      const take = (searchCalendar) ? undefined : input.pageSize
       const calendars = await ctx.prisma.calendar.findMany({
         select: {
           slug: true,
@@ -66,6 +72,7 @@ export const calendarRouter = router({
               courses: {
                 select: {
                   description: true,
+                  type: true,
                 },
               }
             }
@@ -74,8 +81,7 @@ export const calendarRouter = router({
         orderBy: {
           slug: 'asc',
         },
-        skip: input.page * input.pageSize,
-        take: input.pageSize,
+        where, skip, take,
       })
       return calendars
     }),
@@ -83,5 +89,18 @@ export const calendarRouter = router({
     .query(async ({ ctx }) => {
       const count = await ctx.prisma.calendar.count()
       return count
+    }),
+  refresh: publicProcedure
+    .input(z.object({
+      slug: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const calendar = await ctx.prisma.calendar.findFirst({
+        where: { slug: input.slug },
+        include: { lecture: true },
+      })
+      if (calendar == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'Calendar not found' })
+      const res = await updateLectureCache(ctx.prisma, calendar.lecture)
+      return res.length
     }),
 })
