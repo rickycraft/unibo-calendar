@@ -1,4 +1,4 @@
-import type { Lecture, PrismaClient } from '@prisma/client'
+import { Event, Lecture, PrismaClient } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { getTimetableAPI } from './timetable'
 
@@ -33,27 +33,21 @@ export const updateLectureCache = async (prisma: PrismaClient, lectures: Lecture
   const events = await getTimetableAPI(course.urlTime, lectures[0].year, lectures[0].curricula, lectureCodes)
   if (!events) throw new TRPCError({ code: 'NOT_FOUND', message: 'Events not found' })
 
-  const txCreate = events.map((e) => prisma.event.create({
-    data: {
-      title: e.title,
-      start: e.start,
-      end: e.end,
-      aula: e.aula,
-      lectureCode: e.lectureCode,
-    },
-  }))
-  await prisma.event.deleteMany({
+  const txDelete = prisma.event.deleteMany({
     where: { lectureCode: { in: lectureCodes } },
   })
-  const res = await prisma.$transaction(txCreate)
-  if (res.length === 0) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Events not cached' })
-  await prisma.lecture.updateMany({
+  const txCreate = events.map(
+    (e) => prisma.event.create({ data: { ...e } })
+  )
+  const txUpdate = prisma.lecture.updateMany({
     where: { code: { in: lectures.map((l) => l.code) } },
-    data: {
-      lastUpdated: new Date()
-    },
+    data: { lastUpdated: new Date() },
   })
-  return res
+  const tx = [txDelete, ...txCreate, txUpdate]
+  const res = await prisma.$transaction(tx)
+  if (res.length !== tx.length) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Events not cached' })
+
+  return res.splice(1, res.length - 2) as Event[]
 }
 
 const getLectureCache = async (prisma: PrismaClient, lectures: string[]) => {
