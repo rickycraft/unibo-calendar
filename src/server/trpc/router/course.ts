@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server'
-import { getCourseUrl, getCsv } from 'server/lib/course'
+import { getCourseTimeUrl, getCsv } from 'server/lib/course'
 import { getCurriculas } from 'server/lib/curricula'
 import { getLessons, getTimetableAPI } from 'server/lib/timetable'
 import { publicProcedure, router } from "server/trpc/trpc"
@@ -12,27 +12,12 @@ export const courseRouter = router({
       if (records == undefined) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "cannot fetch csv" })
 
       const transactions = records.map((record) => ctx.prisma.course.upsert({
-        where: {
-          code_year:
-          {
-            code: record.code,
-            year: record.year
-          }
-        },
+        where: { code: record.code },
         create: record,
         update: record,
       }))
       const res = await ctx.prisma.$transaction(transactions)
       return res.length
-    }),
-  get: publicProcedure
-    .input(z.object({ code: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const course = await ctx.prisma.course.findFirst({
-        where: { code: input.code },
-      })
-      if (course == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
-      return course
     }),
   schools: publicProcedure
     .query(async ({ ctx }) => {
@@ -69,20 +54,8 @@ export const courseRouter = router({
         where: { code: input.code },
       })
       if (course == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found' })
-      let course_url: string
-      if (course.urlTime == null) {
-        const _course_url = await getCourseUrl(course.url)
-        if (_course_url == null) throw new TRPCError({ code: 'NOT_FOUND', message: 'course url not found' })
-        const l = (course.language == "italiano") ? "orario-lezioni" : "timetable"
-        course_url = `${_course_url}/${l}`
-        // update on db
-        await ctx.prisma.course.update({
-          where: { code: input.code },
-          data: { urlTime: course_url },
-        })
-      } else {
-        course_url = course.urlTime
-      }
+
+      const course_url = await getCourseTimeUrl(ctx.prisma, course)
       const curriculas = await getCurriculas(course_url)
       if (curriculas == undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'curriculas not found' })
       return curriculas
