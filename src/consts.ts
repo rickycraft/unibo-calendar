@@ -6,10 +6,10 @@ export const currentYear = () => {
   const now = new Date()
 
   if (now.getMonth() < MONTH_SEPT) {
-    // between Jan - Sep return current year
-    return now.getFullYear()
+    // between Jan - Sep return last year
+    return now.getFullYear() - 1
   } else {
-    // between Oct - Dec return next year
-    return now.getFullYear() + 1
+    // between Oct - Dec return this
+    return now.getFullYear()
   }
 }

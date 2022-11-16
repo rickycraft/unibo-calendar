@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server'
 import { getCourseTimeUrl, getCsv } from 'server/lib/course'
 import { getCurriculas } from 'server/lib/curricula'
 import { getLessons, getTimetableAPI } from 'server/lib/timetable'
+import { handleNextYear } from 'server/lib/year'
 import { publicProcedure, router } from "server/trpc/trpc"
 import { z } from 'zod'
 
@@ -10,6 +11,7 @@ export const courseRouter = router({
     .mutation(async ({ ctx }) => {
       const records = await getCsv()
       if (records == undefined) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "cannot fetch csv" })
+      await handleNextYear(ctx.prisma)
 
       const transactions = records.map((record) => ctx.prisma.course.upsert({
         where: { code: record.code },

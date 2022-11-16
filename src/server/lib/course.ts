@@ -39,7 +39,8 @@ export const getCsv = async () => {
     const record = _record as string[]
     /* eslint-disable @typescript-eslint/no-unused-vars */
     const [
-      _year, _imm,
+      yyear,
+      _imm,
       code,
       description,
       url,
@@ -53,7 +54,7 @@ export const getCsv = async () => {
     ] = record
     /* eslint-disable @typescript-eslint/no-non-null-assertion */
     records.push({
-      year,
+      year: Number(yyear?.split('/')[0]),
       code: Number(code),
       description: description!,
       url: url!,
